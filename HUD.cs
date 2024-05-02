@@ -40,5 +40,9 @@ public partial class HUD : CanvasLayer
 	private void OnMessageTimerTimeout(){
 		GetNode<Label>("Message").Hide();
 	}
+	
+	public void UpdateHealth(int health){
+		GetNode<Label>("HealthLabel").Text = health.ToString();
+	}
 }
 

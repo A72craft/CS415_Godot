@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cgfo2tgbtaw7l"]
+
+[ext_resource type="Script" path="res://Heart.cs" id="1_1ibmh"]
+[ext_resource type="Texture2D" uid="uid://cdb5lalwn6kc" path="res://art/—Pngtree—pixel love_3279134.png" id="1_q48q7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m8nw7"]
+size = Vector2(60, 52)
+
+[node name="Heart" type="Area2D"]
+script = ExtResource("1_1ibmh")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2.86102e-06, -5.24521e-06)
+scale = Vector2(0.0766667, 0.0733333)
+texture = ExtResource("1_q48q7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
+shape = SubResource("RectangleShape2D_m8nw7")

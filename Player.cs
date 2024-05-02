@@ -7,6 +7,9 @@ public partial class Player : Area2D
 	[Signal]
 	public delegate void HitEventHandler();
 	
+	[Signal]
+	public delegate void HealthHitEventHandler();
+	
 	[Export]
 	public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
 
@@ -60,10 +63,20 @@ public partial class Player : Area2D
 	}
 	
 	private void OnBodyEntered(Node2D body){
-		Hide(); // Player disappears after being hit.
-		EmitSignal(SignalName.Hit);
-		// Must be deferred as we can't change physics properties on a physics callback.
-		GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		if(body is Mob){
+			body.QueueFree();
+			EmitSignal(SignalName.Hit);
+		}else if(body is Heart){
+			body.QueueFree();
+			GD.Print("1");
+		}
+	}
+	
+	private void OnAreaEntered(Node2D body){
+		if(body is Heart){
+			body.QueueFree();
+			EmitSignal(SignalName.HealthHit);
+		}
 	}
 	
 	public void Start(Vector2 position){
@@ -71,6 +84,6 @@ public partial class Player : Area2D
 		Show();
 		GetNode<CollisionShape2D>("CollisionShape2D").Disabled = false;
 	}
+	
 }
-
 
