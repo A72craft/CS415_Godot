@@ -17,8 +17,20 @@ public partial class main : Node
 	private bool _powerUp;
 	private int _multiplier;
 	private float _arielPlayback;
+	private int _highScore;
 	
 	public override void _Ready(){
+		var score_data = new Godot.Collections.Dictionary();
+		var config = new ConfigFile();
+		Error err = config.Load("user://scores.cfg");
+		if(err != Error.Ok){
+			config.SetValue("player1","highest_score",0);
+			config.Save("user://scores.cfg");
+			_highScore = 0;
+		}else{
+			_highScore = (int)config.GetValue("player1","highest_score");
+		}
+		GetNode<HUD>("HUD").SetHighScoreDisplay(_highScore);
 	}
 	
 	public override void _Process(double delta){
@@ -28,6 +40,13 @@ public partial class main : Node
 	}
 	
 	private void gameOver(){
+	if(_score > _highScore){
+		var config = new ConfigFile();
+		_highScore = _score;
+		config.SetValue("player1","highest_score",_score);
+		config.Save("user://scores.cfg");
+	}
+	
 	var player = GetNode<Player>("Player");
 	player.Hide();
 	player.GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
@@ -38,6 +57,8 @@ public partial class main : Node
 	GetNode<HUD>("HUD").ShowGameOver();
 	GetNode<AudioStreamPlayer>("Ariel").Stop();
 	GetNode<AudioStreamPlayer>("DeathSound").Play();
+	GetNode<HUD>("HUD").SetHighScoreDisplay(_highScore);
+	GetNode<HUD>("HUD").DisplayHighScore(true);
 	}
 
 	public void NewGame(){
@@ -57,6 +78,7 @@ public partial class main : Node
 	hud.UpdateScore(_score);
 	hud.UpdateHealth(_health);
 	hud.ShowMessage("Get Ready!");
+	hud.DisplayHighScore(false);
 	GetTree().CallGroup("mobs", Node.MethodName.QueueFree);
 	GetTree().CallGroup("hearts", Node.MethodName.QueueFree);
 	GetTree().CallGroup("powerups", Node.MethodName.QueueFree);

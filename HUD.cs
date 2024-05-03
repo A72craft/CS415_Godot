@@ -58,5 +58,20 @@ public partial class HUD : CanvasLayer
 			powerUpLabel.Text = time.ToString("F2");
 		}
 	}
+	
+	public void DisplayHighScore(bool isShown){
+		Label highScore = GetNode<Label>("HighScore");
+		if(isShown){
+			highScore.Show();
+		}else{
+			highScore.Hide();
+		}
+	}
+	
+	public void SetHighScoreDisplay(int score){
+		Label highScore = GetNode<Label>("HighScore");
+		string str = "Highest Score:\n" + score;
+		highScore.Text = str;
+	}
 }
 
