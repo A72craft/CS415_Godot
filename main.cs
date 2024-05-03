@@ -8,11 +8,22 @@ public partial class main : Node
 	
 	[Export]
 	public PackedScene Heart { get; set; }
+	
+	[Export]
+	public PackedScene PowerUp { get; set; }
 
 	private int _score;
 	private int _health;
+	private bool _powerUp;
+	private int _multiplier;
 	
 	public override void _Ready(){
+	}
+	
+	public override void _Process(double delta){
+		var HUD = GetNode<HUD>("HUD");
+		Timer powerUpTime = GetNode<Timer>("PowerUpTimer");
+		HUD.DisplayPowerUpTimer(powerUpTime.TimeLeft);
 	}
 	
 	private void gameOver(){
@@ -29,6 +40,9 @@ public partial class main : Node
 	public void NewGame(){
 	_score = 0;
 	_health = 3;
+	_powerUp = false;
+	_multiplier = 1;
+	
 
 	var player = GetNode<Player>("Player");
 	var startPosition = GetNode<Marker2D>("StartPosition");
@@ -70,14 +84,26 @@ public partial class main : Node
 	}
 	
 	private void OnScoreTimerTimeout(){
-		_score++;
+		_score *= _multiplier;
 		GetNode<HUD>("HUD").UpdateScore(_score);
+	}
+	
+	private void OnSpawnPowerUpTimerTimeout(){
+		PowerUp powerUp = PowerUp.Instantiate<PowerUp>();
+		// Set the mob's position to a random location.
+		int x,y;
+		x = (int)GD.RandRange(50,1000);
+		y = (int)GD.RandRange(50,600);
+		powerUp.Position = new Vector2(x,y);
+
+		AddChild(powerUp);
 	}
 	
 	private void OnStartTimerTimeout(){
 		GetNode<Timer>("MobTimer").Start();
 		GetNode<Timer>("ScoreTimer").Start();
 		GetNode<Timer>("HeartTimer").Start();
+		GetNode<Timer>("SpawnPowerUpTimer").Start();
 	}
 	
 	private void OnStartHeartTimeout(){
@@ -91,6 +117,26 @@ public partial class main : Node
 		AddChild(heart);
 	}
 	
+	private void OnPowerUpTimeout(){
+		_powerUp = false;
+		GetNode<HUD>("HUD").UpdateHealth(_health);
+		GetNode<Timer>("PowerUpTimer").Stop();
+	}
+	
+	public void MobHit(){
+		if(_powerUp){
+			DestroyEnemy();
+		}else{
+			DecreaseHealth();
+		}
+	}
+	
+	public void DestroyEnemy(){
+		_score = _score + (_multiplier * 5);
+		GetNode<HUD>("HUD").UpdateScore(_score);
+		//GetNode<Timer>("PowerUpTimer").WaitTime += 3;
+	}
+	
 	public void DecreaseHealth(){
 		_health--;
 		GetNode<HUD>("HUD").UpdateHealth(_health);
@@ -101,12 +147,23 @@ public partial class main : Node
 	
 	public void IncreaseHealth(){
 		if(_health == 9){
+		}else if(_powerUp){
+			_score = _score + _multiplier;
+			GetNode<HUD>("HUD").UpdateScore(_score);
 		}else{
 			_health++;
 			_score++;
 			GetNode<HUD>("HUD").UpdateHealth(_health);
 			GetNode<HUD>("HUD").UpdateScore(_score);
 		}
+		GetNode<AudioStreamPlayer>("HealthPickUp").Play();
+	}
+	
+	public void StartPowerUp(){
+		GetNode<Timer>("PowerUpTimer").Start();
+		_powerUp = true;
+		GetNode<HUD>("HUD").UpdateHealth(999);
 	}
 
 }
+

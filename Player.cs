@@ -10,6 +10,9 @@ public partial class Player : Area2D
 	[Signal]
 	public delegate void HealthHitEventHandler();
 	
+	[Signal]
+	public delegate void PowerUpHitEventHandler();
+	
 	[Export]
 	public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
 
@@ -76,6 +79,9 @@ public partial class Player : Area2D
 		if(body is Heart){
 			body.QueueFree();
 			EmitSignal(SignalName.HealthHit);
+		}else if(body is PowerUp){
+			body.QueueFree();
+			EmitSignal(SignalName.PowerUpHit);
 		}
 	}
 	

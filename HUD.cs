@@ -44,5 +44,15 @@ public partial class HUD : CanvasLayer
 	public void UpdateHealth(int health){
 		GetNode<Label>("HealthLabel").Text = health.ToString();
 	}
+	
+	public void DisplayPowerUpTimer(double time){
+		var powerUpLabel = GetNode<Label>("PowerUpLabel");
+		if(time <= 0){
+			powerUpLabel.Hide();
+		}else{
+			powerUpLabel.Show();
+			powerUpLabel.Text = time.ToString("F2");
+		}
+	}
 }
 
