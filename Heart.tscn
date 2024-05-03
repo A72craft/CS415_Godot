@@ -6,7 +6,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m8nw7"]
 size = Vector2(60, 52)
 
-[node name="Heart" type="Area2D"]
+[node name="Heart" type="Area2D" groups=["hearts"]]
 script = ExtResource("1_1ibmh")
 metadata/_edit_group_ = true
 

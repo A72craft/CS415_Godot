@@ -58,6 +58,8 @@ public partial class main : Node
 	hud.UpdateHealth(_health);
 	hud.ShowMessage("Get Ready!");
 	GetTree().CallGroup("mobs", Node.MethodName.QueueFree);
+	GetTree().CallGroup("hearts", Node.MethodName.QueueFree);
+	GetTree().CallGroup("powerups", Node.MethodName.QueueFree);
 	GetNode<AudioStreamPlayer>("Ariel").Play();
 	}
 	
@@ -132,6 +134,7 @@ public partial class main : Node
 	public void MobHit(){
 		if(_powerUp){
 			DestroyEnemy();
+			GetNode<AudioStreamPlayer>("ScoreSound").Play();
 		}else{
 			DecreaseHealth();
 		}
@@ -169,7 +172,7 @@ public partial class main : Node
 	public void StartPowerUp(){
 		GetNode<Timer>("PowerUpTimer").Start();
 		_powerUp = true;
-		GetNode<HUD>("HUD").UpdateHealth(999);
+		GetNode<HUD>("HUD").UpdateHealth("INF");
 		_arielPlayback = GetNode<AudioStreamPlayer>("Ariel").GetPlaybackPosition();
 		GetNode<AudioStreamPlayer>("Ariel").Stop();
 		GetNode<AudioStreamPlayer>("House").Play();
