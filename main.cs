@@ -16,6 +16,7 @@ public partial class main : Node
 	private int _health;
 	private bool _powerUp;
 	private int _multiplier;
+	private float _arielPlayback;
 	
 	public override void _Ready(){
 	}
@@ -32,8 +33,10 @@ public partial class main : Node
 	player.GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 	GetNode<Timer>("MobTimer").Stop();
 	GetNode<Timer>("ScoreTimer").Stop();
+	GetNode<Timer>("SpawnPowerUpTimer").Stop();
+	GetNode<Timer>("HeartTimer").Stop();
 	GetNode<HUD>("HUD").ShowGameOver();
-	GetNode<AudioStreamPlayer>("Music").Stop();
+	GetNode<AudioStreamPlayer>("Ariel").Stop();
 	GetNode<AudioStreamPlayer>("DeathSound").Play();
 	}
 
@@ -42,6 +45,7 @@ public partial class main : Node
 	_health = 3;
 	_powerUp = false;
 	_multiplier = 1;
+	_arielPlayback = 0;
 	
 
 	var player = GetNode<Player>("Player");
@@ -54,7 +58,7 @@ public partial class main : Node
 	hud.UpdateHealth(_health);
 	hud.ShowMessage("Get Ready!");
 	GetTree().CallGroup("mobs", Node.MethodName.QueueFree);
-	GetNode<AudioStreamPlayer>("Music").Play();
+	GetNode<AudioStreamPlayer>("Ariel").Play();
 	}
 	
 	private void OnMobTimerTimeout(){
@@ -84,7 +88,7 @@ public partial class main : Node
 	}
 	
 	private void OnScoreTimerTimeout(){
-		_score *= _multiplier;
+		_score += (1 *_multiplier);
 		GetNode<HUD>("HUD").UpdateScore(_score);
 	}
 	
@@ -121,6 +125,8 @@ public partial class main : Node
 		_powerUp = false;
 		GetNode<HUD>("HUD").UpdateHealth(_health);
 		GetNode<Timer>("PowerUpTimer").Stop();
+		GetNode<AudioStreamPlayer>("House").Stop();
+		GetNode<AudioStreamPlayer>("Ariel").Play(_arielPlayback);
 	}
 	
 	public void MobHit(){
@@ -143,6 +149,7 @@ public partial class main : Node
 		if(_health == 0){
 			gameOver();
 		}
+		GetNode<AudioStreamPlayer>("HurtSound").Play();
 	}
 	
 	public void IncreaseHealth(){
@@ -163,6 +170,9 @@ public partial class main : Node
 		GetNode<Timer>("PowerUpTimer").Start();
 		_powerUp = true;
 		GetNode<HUD>("HUD").UpdateHealth(999);
+		_arielPlayback = GetNode<AudioStreamPlayer>("Ariel").GetPlaybackPosition();
+		GetNode<AudioStreamPlayer>("Ariel").Stop();
+		GetNode<AudioStreamPlayer>("House").Play();
 	}
 
 }
