@@ -12,6 +12,20 @@ events = [SubResource("InputEventAction_5dhn0")]
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_5eu5x")
 
+[node name="MultiplierLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -29.0
+offset_top = 81.0
+offset_right = 29.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_bw2bi")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="ScoreLabel" type="Label" parent="."]
 anchors_preset = 5
 anchor_left = 0.5
@@ -23,21 +37,6 @@ grow_horizontal = 2
 theme_override_fonts/font = ExtResource("1_bw2bi")
 theme_override_font_sizes/font_size = 64
 text = "0"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MultiplierLabel" type="Label" parent="ScoreLabel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -29.0
-offset_top = 81.0
-offset_right = 29.0
-offset_bottom = 120.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("1_bw2bi")
-theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 vertical_alignment = 1
 

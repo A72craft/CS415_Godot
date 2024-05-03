@@ -18,6 +18,8 @@ public partial class main : Node
 	private int _multiplier;
 	private float _arielPlayback;
 	private int _highScore;
+	private int _mobDown;
+	private float _mobSpawnTime;
 	
 	public override void _Ready(){
 		var score_data = new Godot.Collections.Dictionary();
@@ -67,6 +69,8 @@ public partial class main : Node
 	_powerUp = false;
 	_multiplier = 1;
 	_arielPlayback = 0;
+	_mobDown = 0;
+	_mobSpawnTime = 1;
 	
 
 	var player = GetNode<Player>("Player");
@@ -109,6 +113,7 @@ public partial class main : Node
 
 		// Spawn the mob by adding it to the Main scene.
 		AddChild(mob);
+		GetNode<Timer>("MobTimer").WaitTime = (float)GD.RandRange(_mobSpawnTime - 0.05,_mobSpawnTime  + 0.05);;
 	}
 	
 	private void OnScoreTimerTimeout(){
@@ -117,13 +122,14 @@ public partial class main : Node
 	}
 	
 	private void OnSpawnPowerUpTimerTimeout(){
+		if(_powerUp) return;
 		PowerUp powerUp = PowerUp.Instantiate<PowerUp>();
 		// Set the mob's position to a random location.
 		int x,y;
 		x = (int)GD.RandRange(50,1000);
 		y = (int)GD.RandRange(50,600);
 		powerUp.Position = new Vector2(x,y);
-
+		GetNode<Timer>("SpawnPowerUpTimer").WaitTime = (int)GD.RandRange(12,25);
 		AddChild(powerUp);
 	}
 	
@@ -141,12 +147,14 @@ public partial class main : Node
 		x = (int)GD.RandRange(50,1000);
 		y = (int)GD.RandRange(50,600);
 		heart.Position = new Vector2(x,y);
-
+		
+		GetNode<Timer>("SpawnPowerUpTimer").WaitTime = (int)GD.RandRange(8,15);
 		AddChild(heart);
 	}
 	
 	private void OnPowerUpTimeout(){
 		_powerUp = false;
+		//SetDifficulty(1);
 		GetNode<HUD>("HUD").UpdateHealth(_health);
 		GetNode<Timer>("PowerUpTimer").Stop();
 		GetNode<AudioStreamPlayer>("House").Stop();
@@ -157,8 +165,17 @@ public partial class main : Node
 		if(_powerUp){
 			DestroyEnemy();
 			GetNode<AudioStreamPlayer>("ScoreSound").Play();
+			_mobDown ++;
+			if(_mobDown > 50) SetDifficulty(10);
+			else if(_mobDown > 20) SetDifficulty(5);
+			else if(_mobDown > 10) SetDifficulty(2);
 		}else{
 			DecreaseHealth();
+			_mobDown -= 5;
+			if(_mobDown > 50) SetDifficulty(10);
+			else if(_mobDown > 20) SetDifficulty(5);
+			else if(_mobDown > 10) SetDifficulty(2);
+			else SetDifficulty(1);
 		}
 	}
 	
@@ -192,12 +209,19 @@ public partial class main : Node
 	}
 	
 	public void StartPowerUp(){
+		if(_powerUp) return;
 		GetNode<Timer>("PowerUpTimer").Start();
 		_powerUp = true;
 		GetNode<HUD>("HUD").UpdateHealth("INF");
 		_arielPlayback = GetNode<AudioStreamPlayer>("Ariel").GetPlaybackPosition();
 		GetNode<AudioStreamPlayer>("Ariel").Stop();
 		GetNode<AudioStreamPlayer>("House").Play();
+	}
+	
+	public void SetDifficulty(int diff){
+		GetNode<HUD>("HUD").SetMultiplier(diff);
+		_multiplier = diff;
+		_mobSpawnTime = (float)1.0/diff;
 	}
 
 }

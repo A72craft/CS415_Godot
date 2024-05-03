@@ -73,5 +73,29 @@ public partial class HUD : CanvasLayer
 		string str = "Highest Score:\n" + score;
 		highScore.Text = str;
 	}
+	
+	public void SetMultiplier(int multiplier){
+		Label multi = GetNode<Label>("MultiplierLabel");
+		switch(multiplier){
+			case 1:  
+				multi.Hide();
+				break;
+			case 2:	
+				multi.Show();
+				multi.Text = "X"+2+"!";
+				break;
+			case 5:	
+				multi.Show();
+				multi.Text = "X"+5+"!";
+				break;
+			case 10:
+				multi.Show();
+				multi.Text = "X"+10+"!";
+				break;
+			default:
+				multi.Hide();
+				break;
+			}
+	}
 }
 
