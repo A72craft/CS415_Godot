@@ -158,6 +158,7 @@ public partial class main : Node
 		//SetDifficulty(1);
 		GetNode<HUD>("HUD").UpdateHealth(_health);
 		GetNode<Timer>("PowerUpTimer").Stop();
+		GetNode<Timer>("PowerUpTimer").WaitTime = (float)GD.RandRange(8,15);
 		GetNode<AudioStreamPlayer>("House").Stop();
 		GetNode<AudioStreamPlayer>("Ariel").Play(_arielPlayback);
 	}
@@ -167,16 +168,16 @@ public partial class main : Node
 			DestroyEnemy();
 			GetNode<AudioStreamPlayer>("ScoreSound").Play();
 			_mobDown ++;
-			if(_mobDown > 50) SetDifficulty(10);
-			else if(_mobDown > 20) SetDifficulty(5);
-			else if(_mobDown > 10) SetDifficulty(2);
+			if(_mobDown >= 50) SetDifficulty(10);
+			else if(_mobDown >= 25) SetDifficulty(5);
+			else if(_mobDown >= 5) SetDifficulty(2);
 		}else{
 			DecreaseHealth();
 			_mobDown -= 5;
-			if(_mobDown < 0) _mobDown = 0;
-			if(_mobDown > 50) SetDifficulty(10);
-			else if(_mobDown > 20) SetDifficulty(5);
-			else if(_mobDown > 10) SetDifficulty(2);
+			if(_mobDown <= 0) _mobDown = 0;
+			if(_mobDown >= 50) SetDifficulty(10);
+			else if(_mobDown >= 25) SetDifficulty(5);
+			else if(_mobDown >= 5) SetDifficulty(2);
 			else SetDifficulty(1);
 		}
 	}
@@ -189,21 +190,23 @@ public partial class main : Node
 	
 	public void DecreaseHealth(){
 		_health--;
-		GetNode<HUD>("HUD").UpdateHealth(_health);
+		GetNode<AudioStreamPlayer>("HurtSound").Play();
 		if(_health == 0){
+			GetNode<HUD>("HUD").UpdateHealth(_health);
 			gameOver();
 		}
-		GetNode<AudioStreamPlayer>("HurtSound").Play();
+		GetNode<HUD>("HUD").UpdateHealth(_health);
 	}
 	
 	public void IncreaseHealth(){
 		if(_health == 9){
 		}else if(_powerUp){
+			_health++;
 			_score = _score + _multiplier;
 			GetNode<HUD>("HUD").UpdateScore(_score);
 		}else{
 			_health++;
-			_score++;
+			_score = _score + _multiplier;
 			GetNode<HUD>("HUD").UpdateHealth(_health);
 			GetNode<HUD>("HUD").UpdateScore(_score);
 		}
@@ -221,9 +224,27 @@ public partial class main : Node
 	}
 	
 	public void SetDifficulty(int diff){
+		var backgroundColor = GetNode<ColorRect>("Background");
 		GetNode<HUD>("HUD").SetMultiplier(diff);
 		_multiplier = diff;
 		_mobSpawnTime = (float)1.0/diff;
+		switch(diff){
+			case 1:  
+				backgroundColor.Color = new Color(82.0f/255.0f,82.0f/255.0f,82.0f/255.0f);
+				break;
+			case 2:
+				backgroundColor.Color = new Color(35.0f/255.0f,91.0f/255.0f,95.0f/255.0f);
+				break;
+			case 5:
+				backgroundColor.Color = new Color(65.0f/255.0f,77.0f/255.0f,132.0f/255.0f);
+				break;
+			case 10:
+				backgroundColor.Color = new Color(191.0f/255.0f,83.0f/255.0f,49.0f/255.0f);
+				break;
+			default:
+				backgroundColor.Color=new Color(82.0f/255.0f,82.0f/255.0f,82.0f/255.0f);
+				break;
+			}
 	}
 
 }
