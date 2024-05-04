@@ -83,6 +83,7 @@ public partial class main : Node
 	hud.UpdateHealth(_health);
 	hud.ShowMessage("Get Ready!");
 	hud.DisplayHighScore(false);
+	SetDifficulty(1);
 	GetTree().CallGroup("mobs", Node.MethodName.QueueFree);
 	GetTree().CallGroup("hearts", Node.MethodName.QueueFree);
 	GetTree().CallGroup("powerups", Node.MethodName.QueueFree);
@@ -172,6 +173,7 @@ public partial class main : Node
 		}else{
 			DecreaseHealth();
 			_mobDown -= 5;
+			if(_mobDown < 0) _mobDown = 0;
 			if(_mobDown > 50) SetDifficulty(10);
 			else if(_mobDown > 20) SetDifficulty(5);
 			else if(_mobDown > 10) SetDifficulty(2);
